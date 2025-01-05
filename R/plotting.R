@@ -5,14 +5,14 @@ plot_prices <- function(data_list) {
   if (length(data_list) == 0) {
     return(NULL)
   }
-  
+
   plots <- lapply(names(data_list), function(symbol) {
     data <- data_list[[symbol]]
-    # Ensure data is a data frame with proper column names
+    
     data_df <- data.frame(Date = as.Date(index(data)), Price = as.numeric(Cl(data)))
     
     ggplot(data = data_df, aes(x = Date, y = Price)) +
-      geom_line(linewidth = 1.2, color = "#2980b9") +  # Updated aesthetic
+      geom_line(linewidth = 1.2, color = "#2980b9") +
       ggtitle(paste("Price of", symbol)) +
       theme_minimal() +
       xlab("Date") +
@@ -23,6 +23,6 @@ plot_prices <- function(data_list) {
         axis.text = element_text(size = 10)
       )
   })
-  
+
   do.call(gridExtra::grid.arrange, c(plots, ncol = 1))
 }

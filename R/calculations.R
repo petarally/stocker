@@ -30,55 +30,45 @@ calculate_annualized_return <- function(target_growth, months) {
 }
 
 optimize_portfolio <- function(data_list, max_risk, target_growth, investment_amount) {
-  # Calculate annualized return based on target growth
-  target_return <- calculate_annualized_return(target_growth, months = 12)
+  max_risk_decimal <- max_risk / 100
   
-  # Calculate the annualized returns for each asset
+  # Calculate returns and risk metrics
   annualized_returns <- calculate_annualized_returns(data_list)
+  daily_returns <- do.call(cbind, lapply(data_list, function(data) dailyReturn(Cl(data))))
+  cov_matrix <- cov(daily_returns, use = "complete.obs")
   
-  # Calculate the covariance matrix for the assets
-  cov_matrix <- cov(do.call(cbind, lapply(data_list, function(data) dailyReturn(Cl(data)))), use = "complete.obs")
-  
-  # Get the feasible return range
-  min_return <- min(annualized_returns)
-  max_return <- max(annualized_returns)
-  
-  # Adjust target return if outside feasible range
-  if (target_return < min_return) {
-    target_return <- min_return
-  } else if (target_return > max_return) {
-    target_return <- max_return
-  }
-  
-  # Define the optimization problem
   n <- length(annualized_returns)
+  
+  # Add maximum weight constraint to ensure diversification
+  max_weight <- 0.60  # Maximum 60% in any single asset
+  
   opt_portfolio <- OP(
     objective = Q_objective(Q = cov_matrix, L = rep(0, n)),
     constraints = L_constraint(
       L = rbind(
         rep(1, n),                # Sum of weights = 1
         diag(n),                  # Individual weight constraints
+        -diag(n),                 # Maximum weight constraints
         annualized_returns        # Return constraint
       ),
-      dir = c("==", rep(">=", n), ">="),
-      rhs = c(1, rep(0, n), target_return)
-    )
+      dir = c("==", rep(">=", n), rep(">=", n), ">="),
+      rhs = c(1, rep(0, n), rep(-max_weight, n), target_growth/100)
+    ),
+    bounds = V_bound(lb = rep(0.1, n), ub = rep(max_weight, n))  # Minimum 10% in each asset
   )
   
-  # Solve the optimization problem
   solution <- ROI_solve(opt_portfolio)
-  
-  # Get weights and validate
   weights <- solution$solution
   names(weights) <- names(data_list)
   
-  # Calculate investment amounts
   investment_amounts <- weights * investment_amount
   names(investment_amounts) <- names(data_list)
   
   return(list(
     weights = weights,
     investment_amounts = investment_amounts,
-    achieved_return = sum(weights * annualized_returns)
+    achieved_return = sum(weights * annualized_returns),
+    portfolio_risk = sqrt(t(weights) %*% cov_matrix %*% weights)
   ))
 }
+
