@@ -8,11 +8,20 @@ plot_prices <- function(data_list) {
   
   plots <- lapply(names(data_list), function(symbol) {
     data <- data_list[[symbol]]
-    ggplot(data = fortify.zoo(Cl(data)), aes(x = Index, y = Cl)) +
-      geom_line() +
+    # Ensure data is a data frame with proper column names
+    data_df <- data.frame(Date = as.Date(index(data)), Price = as.numeric(Cl(data)))
+    
+    ggplot(data = data_df, aes(x = Date, y = Price)) +
+      geom_line(linewidth = 1.2, color = "#2980b9") +  # Updated aesthetic
       ggtitle(paste("Price of", symbol)) +
+      theme_minimal() +
       xlab("Date") +
-      ylab("Price")
+      ylab("Price") +
+      theme(
+        plot.title = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10)
+      )
   })
   
   do.call(gridExtra::grid.arrange, c(plots, ncol = 1))
