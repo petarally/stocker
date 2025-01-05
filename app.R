@@ -5,58 +5,60 @@ source("R/calculations.R")
 source("R/plotting.R")
 
 ui <- fluidPage(
-  theme = shinythemes::shinytheme("cerulean"),  # Use a modern Bootstrap theme
+  theme = shinythemes::shinytheme("cerulean"),
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
-    tags$link(rel = "icon", href = "www/logo.png")  # Optional favicon
+    tags$link(rel = "icon", href = "www/logo.png")
   ),
   navbarPage(
-    title = "Portfolio Optimizer",
+    title = "Optimizator Portfelja",
     tabPanel(
-      "Dashboard",
+      "Nadzorna Ploča",
       sidebarLayout(
         sidebarPanel(
-          tags$h4("Investment Preferences"),
-          textInput("symbols", "Enter Tickers (comma-separated):", value = "BTC-USD, ETH-USD"),
-          numericInput("target_growth", "Target Growth (%):", value = 18, min = 0, max = 100),
-          numericInput("max_risk", "Max Risk (%):", value = 10, min = 0, max = 100),
-          numericInput("months", "Investment Period (Months)", 12, min = 1),
-          numericInput("investment_amount", "Total Investment Amount (€):", value = 1000, min = 1),  # New input field
-          actionButton("fetch", "Fetch Data", class = "btn btn-primary btn-lg"),
+          tags$h4("Preferencije Ulaganja"),
+          textInput("symbols", "Unesite oznake dionica (odvojene zarezom):", value = "BTC-USD, ETH-USD"),
+          numericInput("target_growth", "Ciljani rast (%):", value = 18, min = 0, max = 100),
+          numericInput("max_risk", "Maksimalni rizik (%):", value = 10, min = 0, max = 100),
+          numericInput("months", "Razdoblje ulaganja (mjeseci):", 12, min = 1),
+          numericInput("investment_amount", "Ukupni iznos ulaganja (€):", value = 1000, min = 1),
+          actionButton("fetch", "Dohvati podatke", class = "btn btn-primary btn-lg"),
           br(),
-          actionButton("optimize_btn", "Optimize Portfolio", class = "btn btn-success btn-lg")
+          actionButton("optimize_btn", "Optimiziraj portfelj", class = "btn btn-success btn-lg")
         ),
         mainPanel(
-          tags$h4("Optimized Weights"),
+          tags$h4("Optimizirani Udjeli"),
           textOutput("weights"),
           tags$hr(),
-          tags$h4("Investment Distribution"),
-          textOutput("investment_distribution"),  # New output element
+          tags$h4("Raspodjela Ulaganja"),
+          textOutput("investment_distribution"),
           tags$hr(),
-          tags$h4("Price Trends"),
+          tags$h4("Kretanje Cijena"),
           plotOutput("price_plot")
         )
       )
     ),
     tabPanel(
-      "About",
+      "O Aplikaciji",
       fluidRow(
         column(
           12,
-          tags$h3("Portfolio Optimizer"),
-          tags$p("This app helps you analyze investment opportunities in stocks or cryptocurrencies. 
-                  Enter tickers, set your risk tolerance and target growth, and let the app optimize your portfolio."),
-          tags$h4("How it Works"),
+          tags$h3("Optimizator Portfelja"),
+          tags$p("Ova aplikacija pomaže u analizi mogućnosti ulaganja u dionice ili kriptovalute. 
+                 Unesite oznake, postavite toleranciju rizika i ciljani rast, i pustite aplikaciju da optimizira vaš portfelj."),
+          tags$h4("Kako Radi"),
           tags$ul(
-            tags$li("Fetch data dynamically from Yahoo Finance."),
-            tags$li("Visualize historical price trends."),
-            tags$li("Optimize portfolio based on risk-return tradeoffs.")
+            tags$li("Dinamički dohvaća podatke s Yahoo Finance-a."),
+            tags$li("Oznake dionica je potrebno pronaći na https://finance.yahoo.com/"),
+            tags$li("Vizualizira povijesne trendove cijena."),
+            tags$li("Optimizira portfelj na temelju odnosa rizika i povrata.")
           )
         )
       )
     )
   )
 )
+
 
 server <- function(input, output, session) {
   fetched_data <- reactiveVal(list())
