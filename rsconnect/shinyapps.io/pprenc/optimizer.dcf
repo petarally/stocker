@@ -1,0 +1,12 @@
+name: optimizer
+title: optimizer
+username: pprenc
+account: pprenc
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13665475
+bundleId: 9608186
+url: https://pprenc.shinyapps.io/optimizer/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
