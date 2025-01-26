@@ -7,11 +7,18 @@ source("R/plotting.R")
 source("R/portfolio_value.R")
 
 ui <- fluidPage(
-  theme = shinythemes::shinytheme("cerulean"),
   tags$head(
+    tags$script(HTML("
+      $(document).ready(function() {
+        setTimeout(function() {
+          alert('Upozorenje! Ova aplikacija je samo demonstracija višeciljnog odlučivanja te ne pruža stvarne financijske savjete. ');
+        }, 0);
+      });
+    ")),
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
     tags$link(rel = "icon", href = "www/logo.png")
   ),
+  theme = shinythemes::shinytheme("cerulean"),
   navbarPage(
     title = "Optimizator Portfelja",
     tabPanel(

@@ -1,11 +1,11 @@
 name: optimizator
-title: optimizator
+title: stocker
 username: pprenc
 account: pprenc
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13665386
-bundleId: 9608572
+bundleId: 9702922
 url: https://pprenc.shinyapps.io/optimizator/
 version: 1
 asMultiple: FALSE
